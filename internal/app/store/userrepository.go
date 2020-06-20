@@ -32,9 +32,9 @@ func (r *UserRepository) Create(u *model.User) (*model.User, error) {
 	}
 
 	if oid, ok := res.InsertedID.(primitive.ObjectID); ok {
-		insertedUser := u
+		insertedUser := *u
 		insertedUser.ID = oid
-		return insertedUser, nil
+		return &insertedUser, nil
 	} else {
 		return nil, errors.New("user create has not returned ObjectID")
 	}
@@ -82,7 +82,10 @@ func (r *UserRepository) SelectUsers(skip int64, limit int64) ([]model.User, err
 	return users, err
 }
 
-func (r *UserRepository) Update(u model.User) (*model.User, error) {
+func (r *UserRepository) Update(u *model.User) (*model.User, error) {
+	if u.ID.IsZero() {
+		return nil, errors.New("can not update user without ObjectID")
+	}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	res, err := r.coll.ReplaceOne(ctx, bson.M{"_id": u.ID}, u)
 	if err != nil {

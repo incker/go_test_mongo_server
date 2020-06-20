@@ -9,13 +9,13 @@ import (
 )
 
 type User struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Email     string             `bson:"email,omitempty"`
-	LastName  string             `bson:"last_name,omitempty"`
-	Country   string             `bson:"country,omitempty"`
-	City      string             `bson:"city,omitempty"`
-	Gender    string             `bson:"gender,omitempty"`
-	BirthDate time.Time          `bson:"birth_date,omitempty"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Email     string             `bson:"email,omitempty" json:"email,omitempty"`
+	LastName  string             `bson:"last_name,omitempty" json:"lastName,omitempty"`
+	Country   string             `bson:"country,omitempty" json:"country,omitempty"`
+	City      string             `bson:"city,omitempty" json:"city,omitempty"`
+	Gender    string             `bson:"gender,omitempty" json:"gender,omitempty"`
+	BirthDate time.Time          `bson:"birth_date,omitempty" json:"birthDate,omitempty"`
 }
 
 func (u *User) Validate() error {

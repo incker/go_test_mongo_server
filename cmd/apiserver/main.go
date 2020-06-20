@@ -1,32 +1,25 @@
 package main
 
 import (
-	"flag"
-	"github.com/BurntSushi/toml"
-	"go_test_learning/internal/app/apiserver"
+	"go_test_learning/internal/app/server"
 	"log"
+	"net/http"
 )
-
-var (
-	configPath string
-)
-
-func init() {
-	// apiserver.exe -help
-	flag.StringVar(&configPath, "config-path", "configs/apiserver.toml", "path to config file")
-}
 
 func main() {
-	flag.Parse()
-	config := apiserver.NewConfig()
-
-	_, err := toml.DecodeFile(configPath, &config)
+	config, err := server.NewConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s := apiserver.New(config)
-	if err = s.Start(); err != nil {
+	apiServer, err := server.New(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	router := server.NewRouter(apiServer)
+
+	if err = http.ListenAndServe(config.BindAddr, router); err != nil {
 		log.Fatal(err)
 	}
 }

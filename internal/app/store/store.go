@@ -8,37 +8,31 @@ import (
 )
 
 type Store struct {
-	config         *Config
 	db             *mongo.Database
 	userRepository *UserRepository
 }
 
-func New(config *Config) *Store {
-	return &Store{
-		config: config,
-	}
-}
-
-func (s *Store) Open() error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(s.config.MongoDBURL))
+func New(mongoDBURL string, mongoDBName string) (*Store, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(mongoDBURL))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Check the connection
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	s.db = client.Database("testing2")
-	return nil
+	st := &Store{
+		db: client.Database(mongoDBName),
+	}
+	return st, nil
 }
 
 func (s *Store) Close() error {
